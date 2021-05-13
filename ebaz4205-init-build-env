@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# EBAZ4205 Build Environment Setup Script
+#
+
+#
+# Normally this is called as '. ./ebaz4205-init-build-env <builddir>'
+#
+# This works in most shells (not dash), but not all of them pass the arguments
+# when being sourced.  To workaround the shell limitation use "set <builddir>"
+# prior to sourcing this script.
+#
+if [ -n "$BASH_SOURCE" ]; then
+    THIS_SCRIPT=$BASH_SOURCE
+elif [ -n "$ZSH_NAME" ]; then
+    THIS_SCRIPT=$0
+else
+    THIS_SCRIPT="$(pwd)/ebaz4205-init-build-env"
+    if [ ! -e "$THIS_SCRIPT" ]; then
+        echo "Error: $THIS_SCRIPT doesn't exist!" >&2
+        echo "Please run this script in ebaz4205-init-build-env's directory." >&2
+        exit 1
+    fi
+fi
+if [ -n "$BBSERVER" ]; then
+    unset BBSERVER
+fi
+
+if [ -z "$ZSH_NAME" ] && [ "$0" = "$THIS_SCRIPT" ]; then
+    echo "Error: This script needs to be sourced. Please run as '. $THIS_SCRIPT'" >&2
+    exit 1
+fi
+
+if [ -z "$OEROOT" ]; then
+    OEROOT=$(dirname "$THIS_SCRIPT")
+    OEROOT=$(readlink -f "$OEROOT/poky")
+fi
+unset THIS_SCRIPT
+
+export OEROOT
+. $OEROOT/scripts/oe-buildenv-internal &&
+    TEMPLATECONF="$OEROOT/../meta-ebaz4205/conf" $OEROOT/scripts/oe-setup-builddir || {
+    unset OEROOT
+    return 1
+}
+EBAZ4205_VERSION="$(git -C "$OEROOT/.." describe --dirty)"
+unset OEROOT
+
+[ -z "$BUILDDIR" ] || cd "$BUILDDIR"
+
+sed -i "s/^\(DISTRO_VERSION\s=\s\).*$/\1\"${EBAZ4205_VERSION}\"/g" conf/local.conf
+unset EBAZ4205_VERSION

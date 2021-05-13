@@ -1,0 +1,10 @@
+[Unit]
+Description=Adressable led strip controller
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=led-strip -n 120
+
+[Install]
+WantedBy=multi-user.target

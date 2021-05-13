@@ -1,0 +1,9 @@
+machine_name=ebaz4205-zynq7
+kernel_image=/boot/uImage
+kernel_load_address=0x2080000
+devicetree_image=/boot/devicetree/zynq-ebaz4205.dtb
+devicetree_load_address=0x2000000
+bootargs=earlyprintk console=ttyPS0,115200 root=/dev/mmcblk0p2 rw rootwait
+loadkernel=ext4load mmc 0:2 ${kernel_load_address} ${kernel_image}
+loaddtb=ext4load mmc  0:2 ${devicetree_load_address} ${devicetree_image}
+bootcmd=run loadkernel && run loaddtb && bootm ${kernel_load_address} - ${devicetree_load_address}
