@@ -43,7 +43,7 @@ export OEROOT
     unset OEROOT
     return 1
 }
-EBAZ4205_VERSION="$(git -C "$OEROOT/.." describe --dirty)"
+EBAZ4205_VERSION="$(git -C "$OEROOT/.." describe --tags --dirty)"
 unset OEROOT
 
 [ -z "$BUILDDIR" ] || cd "$BUILDDIR"
