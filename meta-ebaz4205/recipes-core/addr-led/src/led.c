@@ -12,10 +12,13 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 
+#define REGS  (3)
+
 typedef struct {
   int fd;
   uint32_t map_size;
   void *map_base;
+  volatile uint32_t *regs[REGS];
 } led_hdl_t;
 
 unsigned char reverse(unsigned char b) {
@@ -102,6 +105,10 @@ void *led_init(E_LED_CTRL ctrl) {
       if(pled_handler->map_base) {
         printf("Memory mapped at address %p.\n", pled_handler->map_base);
         fflush(stdout);
+
+        for (int r = 0; r < REGS; r++) {
+          pled_handler->regs[r] = &((uint32_t *)(pled_handler->map_base))[r];
+        }
       } else {
         fprintf(stderr, "Error (%d) [%s]\n", errno, strerror(errno));
         close(pled_handler->fd);
@@ -140,7 +147,7 @@ inline void wait_reg(uint32_t *reg, uint32_t val) {
       fprintf(stderr, "Timeout...\n");
       break;
     } else {
-      usleep(1000);
+      usleep(100);
       i++;
     }
   }
@@ -149,13 +156,15 @@ inline void wait_reg(uint32_t *reg, uint32_t val) {
 void led_set_color_rgb(void *hdl, uint32_t idx, led_color_rgb_t color) {
   if (hdl) {
     led_hdl_t *pled_handler = (led_hdl_t *)hdl;
+
     uint32_t value = (reverse(color.g) & 0x000000FF) |
     (reverse(color.r) & 0x000000FF) << 8 |
     (reverse(color.b) & 0x000000FF) << 16;
 
-    ((volatile uint32_t *)(pled_handler->map_base))[1] = idx;
-    ((volatile uint32_t *)(pled_handler->map_base))[2] = value;
-    ((volatile uint32_t *)(pled_handler->map_base))[0] = 1;
+    *pled_handler->regs[1] = idx;
+    *pled_handler->regs[2] = value;
+    *pled_handler->regs[0] = 1;
+    wait_reg(pled_handler->regs[0], 0);
   }
 }
 
@@ -167,10 +176,9 @@ void led_set_color_hsv(void *hdl, uint32_t idx, led_color_hsv_t color) {
 void led_display(void *hdl) {
   if (hdl) {
     led_hdl_t *pled_handler = (led_hdl_t *)hdl;
-    volatile uint32_t *reg = &((uint32_t *)(pled_handler->map_base))[0];
-    *reg = 2;
-    *reg = 0;
-    wait_reg(reg, 0);
+
+    *pled_handler->regs[0] = 2;
+    wait_reg(pled_handler->regs[0], 0);
   }
 }
 
@@ -178,8 +186,8 @@ void led_reset(void *hdl) {
   if (hdl) {
     led_hdl_t *pled_handler = (led_hdl_t *)hdl;
     volatile uint32_t *reg = &((uint32_t *)(pled_handler->map_base))[0];
-    *reg = 4;
-    *reg = 0;
-    wait_reg(reg, 0);
+
+    *pled_handler->regs[0] = 4;
+    wait_reg(pled_handler->regs[0], 0);
   }
 }
