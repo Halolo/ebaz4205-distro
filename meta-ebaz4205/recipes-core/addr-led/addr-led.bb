@@ -1,8 +1,11 @@
 SUMMARY = "Addressable leds driver"
 DESCRIPTION = "Use to control led strip like ws2812b"
-LICENSE = "CLOSED"
+LICENSE = "MIT"
 
 inherit cmake externalsrc systemd
+
+DEPENDS_append = "paho-mqtt-c"
+RDEPENDS_${PN}_append = "paho-mqtt-c"
 
 SYSTEMD_SERVICE_${PN} = "${PN}.service"
 SYSTEMD_AUTO_ENABLE_${PN} = "enable"

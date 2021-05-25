@@ -1,5 +1,7 @@
 [Unit]
 Description=Adressable led strip controller
+Requires=mosquitto.service
+After=mosquitto.service
 
 [Service]
 Type=simple
