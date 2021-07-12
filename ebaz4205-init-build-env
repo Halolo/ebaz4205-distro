@@ -50,3 +50,7 @@ unset OEROOT
 
 sed -i "s/^\(DISTRO_VERSION\s=\s\).*$/\1\"${EBAZ4205_VERSION}\"/g" conf/local.conf
 unset EBAZ4205_VERSION
+
+if [ -n "${BITSTREAM_PATH}" ]; then
+	sed -i "s|^\(BITSTREAM_PATH\s=\s\).*$|\1\"${BITSTREAM_PATH}\"|g" conf/local.conf
+fi
