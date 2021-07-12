@@ -1,6 +1,8 @@
 # Base this image on core-image-base
 include recipes-core/images/core-image-base.bb
 
+do_image[mcdepends] = "mc::fsbl:zynq-fsbl:do_deploy"
+
 DEV_TOOLS = " \
   mosquitto \
   mosquitto-clients \

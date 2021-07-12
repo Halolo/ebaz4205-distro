@@ -276,4 +276,8 @@ PACKAGECONFIG_append_pn-qemu-system-native = " sdl"
 # this doesn't mean anything to you.
 CONF_VERSION = "1"
 
+BBMULTICONFIG = "fsbl"
+
 DISTRO_VERSION = "UNDEFINED"
+
+BITSTREAM_PATH = "/tmp/ebaz4205_wrapper.bit"

@@ -13,5 +13,8 @@ BBLAYERS = " \
   ##OEROOT##/../meta-openembedded/meta-python \
   ##OEROOT##/../meta-openembedded/meta-networking \
   ##OEROOT##/../meta-xilinx/meta-xilinx-bsp \
+  ##OEROOT##/../meta-xilinx/meta-xilinx-standalone \
+  ##OEROOT##/../meta-xilinx/meta-xilinx-standalone-experimental \
+  ##OEROOT##/../meta-xilinx/meta-microblaze \
   ##OEROOT##/../meta-ebaz4205 \
   "
